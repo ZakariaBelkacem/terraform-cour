@@ -1,24 +1,28 @@
-variable "aws_region" {
+
+variable "project_name" {
     type = "string"
-    description = "Region of the VPC"
+    description = "Name of the project"
 }
-variable "aws_azs" {
-  type = "list"
-  description = "Available zones"
-}
-variable "vpc_cidr" {
+
+variable "project_id" {
     type = "string"
-    description = "CIDR block"
+    description = "identifiant du projet"
 }
-variable "vpc_name" {
+
+variable "location" {
     type = "string"
-    description = "Name of the VPC"
+    description = "emplacement de l'app engine chez google"
 }
 
 
-}
-variable "app_name" {
+
+variable "version_id" {
     type = "string"
-    description = "Name of the application"
+    description = "la version de l'api "
 }
 
+
+variable "service_name" {
+    type = "list"
+    description = "le nom des différents services "
+}

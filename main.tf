@@ -5,31 +5,33 @@
 #   backend "s3" {}
 # }
 
+#défini le projet dans gcloud
+provider "google" {
+  credentials = "${file("shareatsclef.json")}"
+  project = "{{${var.project_id}}}"
+  region  = "us-central1"
+  zone    = "us-central1-c"
+}
+#gère la création d'un app engine
+resource "google_app_engine_standard_app_version" "shareats" {
+  #crée autant de service que de nom service
+  count = "${length(var.service_name)}"
+  project = "${var.project_id}"
+  version_id = "${var.version_id}"
+  service    = "${var.service_name[count.index]}"
+  runtime    = "java8"
 
-
-data "aws_vpcs" "foo" {
-  filter = {
-    cidr = "172.16.0.0/16"
+  project="${var.project_id}"
+  #comment on lance l'application via le shell
+  entrypoint {
+    shell = "node ./app.js"
   }
-}
 
-resource "aws_lb" "load_balancer" {
-  name               = "${var.app_name}-alb-private"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = ["${aws_security_group.lb_sg.id}"]
-  subnets            = ["${aws_subnet.private.*.id}"]
-  enable_deletion_protection = true
-}
+  env_variables = {
+    port = "8080"
+  }
 
-resource "aws_subnet" "private" {
-    count = "${length(var.aws_azs)}"
-    cidr_block = "${cidrsubnet(var.vpc_cidr,4,count.index+4)}"
-    vpc_id = "${aws_vpc.vpc.id}"
-    tags = {
-        Name = "${var.vpc_name}-private-${var.aws_azs[count.index]}"
-    }
+  noop_on_destroy = true
 }
-
 ### Module Main
 
